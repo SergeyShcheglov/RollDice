@@ -9,32 +9,41 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var dices = 1
+    @State private var diceValue = 6
+
     @State private var defaultSides = 6
     private let sides = [4, 6, 8, 10, 12, 20, 100]
     
-    @State private var diceValue = 6
+    @State private var previousResult = 0
+    @State private var totalResult = 0
+    
     var body: some View {
         NavigationView {
             VStack {
-                Text("Total: \(diceValue)")
+                Text("Total: \(totalResult)")
                     .font(.largeTitle)
                     
-                Text("Previous result: ")
+                Text("Previous result: \(previousResult)")
                     .font(.title3)
                     .foregroundColor(.secondary)
                 Spacer().frame(height: UIScreen.main.bounds.height * 0.3)
                 
-//                ForEach(0...dices) {
-                    ZStack {
-                        Rectangle()
-                            .foregroundColor(.red)
-                        
-                        Text(diceValue.description)
-                            .font(.largeTitle)
-                            .foregroundColor(.white)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                    ForEach(0..<dices, id:\.self) { dice in
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 25)
+                                    .foregroundColor(Color(red: Double.random(in: 0...1), green: Double.random(in: 0...1), blue: Double.random(in: 0...1)))
+                                    
+                                
+                                Text(diceValue.description)
+                                    .font(.largeTitle)
+                                    .foregroundColor(.white)
+                            }
+                            .frame(width: 100, height: 100)
+                        }
                     }
-                    .frame(width: 100, height: 100)
-//                }
+                }
                
                 
                 Button("Roll dice") {
