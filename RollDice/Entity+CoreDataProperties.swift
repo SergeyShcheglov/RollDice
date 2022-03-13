@@ -10,10 +10,10 @@ import Foundation
 import CoreData
 
 
-extension Entity {
+extension DiceModel {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Entity> {
-        return NSFetchRequest<Entity>(entityName: "Entity")
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<DiceModel> {
+        return NSFetchRequest<DiceModel>(entityName: "Dice Model")
     }
 
     @NSManaged public var id: UUID?
@@ -22,6 +22,6 @@ extension Entity {
 
 }
 
-extension Entity : Identifiable {
+extension DiceModel : Identifiable {
 
 }
