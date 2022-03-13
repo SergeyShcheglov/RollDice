@@ -8,8 +8,22 @@
 import SwiftUI
 
 struct HistoryView: View {
+    @FetchRequest(sortDescriptors: []) var diceResults: FetchedResults<DiceModel>
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationView {
+            List {
+                ForEach(diceResults, id: \.id) { dice in
+                    HStack {
+                        HStack {
+                            Image(systemName: "clock")
+                        }
+                        
+                        Text(dice.value.description)
+                    }
+                }
+            }
+        }.navigationTitle("Roll Dice").navigationViewStyle(.stack)
     }
 }
 
