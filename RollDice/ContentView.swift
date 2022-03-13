@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct ContentView: View {
     @State private var dices = 1
     @State private var diceAmount = Array(0...6)
-
+    
     @State private var defaultSides = 6
     private let sides = [4, 6, 8, 10, 12, 20, 100]
     
@@ -20,13 +21,19 @@ struct ContentView: View {
     @State private var diceDict: [String: Int] = ["1Dice": 6]
     
     @State private var feedback = UINotificationFeedbackGenerator()
+    //    let timer = Timer
+    let animationDuration: TimeInterval = 2
+    
+    @Environment(\.managedObjectContext) var moc
+    @FetchRequest(sortDescriptors: []) var diceResults: FetchedResults<DiceModel>
+    
+    @State private var toolbarLinkSelected = false
     
     var body: some View {
         NavigationView {
             VStack {
                 Text("Total: \(totalResult)")
                     .font(.largeTitle)
-                    
                 Text("Previous result: \(previousResult)")
                     .font(.title3)
                     .foregroundColor(.secondary)
@@ -38,7 +45,7 @@ struct ContentView: View {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 25)
                                     .foregroundColor(Color(red: Double.random(in: 0...1), green: Double.random(in: 0...1), blue: Double.random(in: 0...1)))
-                                    
+                                
                                 
                                 Text(String(dice))
                                     .font(.largeTitle)
@@ -77,6 +84,22 @@ struct ContentView: View {
                     }
                 }
             }
+            .navigationTitle("Roll Dice")
+            .toolbar {
+                ToolbarItem {
+                    Button(action: { toolbarLinkSelected = true }) {
+                        Label("History", systemImage: "clock")
+                    }
+                }
+            }
+            .background(
+                NavigationLink(
+                    destination: Label("History", systemImage: "clock"),
+                    isActive: $toolbarLinkSelected
+                ) {
+                    HistoryView()
+                }.hidden()
+            )
         }
     }
     
@@ -85,6 +108,16 @@ struct ContentView: View {
             diceDict[key] = Int.random(in: 1...defaultSides)
         }
         sumTotal()
+        saveToCoreData()
+    }
+    
+    func saveToCoreData() {
+        for (key, value) in diceDict {
+            let newDice = DiceModel(context: moc)
+            newDice.key = key
+            newDice.value = Int16(value)
+            newDice.id = UUID()
+        }
     }
     
     func createNewDice(diceKey: String, diceValue: Int) {
@@ -106,11 +139,11 @@ struct ContentView: View {
     func sumTotal() {
         var result: Int {
             var total = 0
-        for (key, _) in diceDict {
-            total += diceDict[key]!
-        }
+            for (key, _) in diceDict {
+                total += diceDict[key]!
+            }
             return total
-    }
+        }
         previousResult = totalResult
         totalResult = result
     }
