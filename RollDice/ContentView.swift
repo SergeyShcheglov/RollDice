@@ -19,6 +19,8 @@ struct ContentView: View {
     
     @State private var diceDict: [String: Int] = ["1Dice": 6]
     
+    @State private var feedback = UINotificationFeedbackGenerator()
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -49,6 +51,8 @@ struct ContentView: View {
                 Button {
                     withAnimation {
                         rollDice()
+                        feedback
+                            .notificationOccurred(.success)
                     }
                 } label: {
                     Text("Roll dice")
@@ -58,20 +62,12 @@ struct ContentView: View {
                 Spacer()
                 
                 Form {
-                    
-                   
-                    Stepper("Dices: \(dices)", value: $dices, in: 1...6)
-                    {
-                        dice in
+                    Stepper("Dices: \(dices)", value: $dices, in: 1...6) { dice in
                         changeDicesAmount(diceKey: "\(dices)Dice", diceValue: Int.random(in: 1...6))
+                        feedback.prepare()
                     }
                     
                     Section("Side amount") {
-//                        Picker("Dices", selection: $dices ) {
-//                            ForEach(diceAmount, id:\.self) {
-//                                Text($0.description)
-//                            }
-//                        }
                         Picker("Side", selection: $defaultSides) {
                             ForEach(sides, id: \.self) {
                                 Text($0.description)
@@ -85,7 +81,6 @@ struct ContentView: View {
     }
     
     func rollDice() {
-//        diceValue = Int.random(in: 1...defaultSides)
         for (key, _) in diceDict {
             diceDict[key] = Int.random(in: 1...defaultSides)
         }
